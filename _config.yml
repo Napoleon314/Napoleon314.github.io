@@ -3,11 +3,6 @@
 gems:
   - jekyll-archives # Sorry, not GitHub pages friendly!
   - jekyll-sitemap
-  - jekyll-multiple-languages
-
-languages:          ['en', 'cn']
-
-language_default:   'en'
 
 exclude:
   - "/vendor/"
