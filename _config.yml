@@ -25,18 +25,18 @@ defaults:
 
 
 
-title: "RainyAlley"
-email: "sincerebravefight@gmail.com"
-description: "Developer"
-github_username:  "WakelessDragon"
-swiftype_searchId: "ncwR9a8S9CTx2q9SgsJm"
-disqus_shortname: "rainyalley"
+title: "Venus3D"
+email: "napoleon356977480@gmail.com"
+description: "A experimental 3D engine project for NGAPI"
+github_username:  "Napoleon314"
+swiftype_searchId: "DmSxYULB6MXCvDoTYeyg"
+disqus_shortname: "venus3d-blog"
 
 
 
 
-url: "http://blog.rainyalley.com"
-imgrepo: "http://blog.rainyalley.com/static/img"
+url: "http://blog.venus3d.top"
+imgrepo: "http://blog.venus3d.top/static/img"
 
 
 #url: "http://127.0.0.1:4000"
