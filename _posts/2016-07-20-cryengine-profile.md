@@ -40,7 +40,7 @@ Cryengine优化的出彩之处主要有以下几个方面：
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 你分析得很好。
 
@@ -53,7 +53,7 @@ CryEngine强大就在于它不但能有那么多的特效，还能把那些特�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 Crysis是用Cryengine2制作的，Cryengine3无幸窥见，在这里，先说说确切的Cryengine2的渲染过程。
 众所周知Cryengine2，没有使用DeferredShading，所以无法支持太多的光源，主要渲染围绕着阳光进行，而且使用了非常复杂的PixelShader来实现漂亮的材质，所以ZPass预渲染就变得很必要，不然会有很多无用象素被复杂的PixelShader渲染，当然这个和DeferredShading一样，无法支持Blend，所以只有两种，普通和AlphaTest。渲染ZPass为了开启PreZ，肯定要进行排序，先渲染普通物体，后渲染带AlphaTest（当然是使用Shader的Texkill来进行，没有状态切换）的物体。其实标准的ZPass应该是不需要ColorWrite的，但是Crysis利用这个机会，输出了深度到一张R32F，因为视距为八公里，乘一个0.000125映射到[0,1]，天空为2。有了深度的G-Buffer，其实就已经可以做很多事了，除了光照外很多的后处理都可以用这张深度缓冲来进行。有了深度后，会先进行AO计算，然后阴影，这都是屏幕空间的计算，然后渲染每个物体都会对这两张图进行采样。AO是一张RGBA，R通道用来存SSAO的结果，G通道用来存2.5DTerrainAO的结果。然后进行一次Blur。阴影是有个Mask的，平行光一般是R，剩下三个通道，大概可以存放三个点光源或者SpotLight吧。然后就是对一张R16G16B16A16F进行HR的高范围渲染。这回DepthFunc已经是Equal了，因为深度已经完全填充。当然，为了PreZ，还是先普通后AlphaTest，然后会看到大量的碎片，因为Z检测会挡掉大量像素。所有着色像素加起来也几乎就是屏幕像素了，除非有两个三角形有点是同Depth的Fighting状态，当然可能性很低。完成后会进行Blend渲染，主要是粒子，玻璃之类的东西。结束后，就要进行HDRToneMap和HDRHighLightBloom了。完成后，接下来有一个EdgeAA，当然除此之外应该还有抗齿过程，只是调试时肯定是要关掉的。EdgeAA是个抗齿的后处理，只使用Depth来提取边缘。然后还有个Glow，大概会把火焰之类的Bloom加大吧。在这之后，就是SunShaft，来加上漂亮的Ray和Beam，最后会进行ColorGrading，完成渲染的最后一步，这样，就能看到Crysis的画面了。这样说是不是有些笼统呢？没关系，如果大家喜欢，我还会继续深入剖析Cryengine渲染的一些技术点，来解读震撼画面背后的故事。今天有点晚了先写到这儿了。
@@ -67,7 +67,7 @@ Crysis是用Cryengine2制作的，Cryengine3无幸窥见，在这里，先说说
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 继续更新啦，首先谈谈Cryengine的地形技术。地形技术是Cryengine的一个较为核心的技术，为了实现八公里的超远视距，地形经过了比较细致的优化。Cryengine的地形主要使用的数据结构仍然是高度图，并且在Cryengine2中可以看到，它所支持的尺寸非常有限，好像也不是动态加载技术的无缝大场景。为此为特地下了Crysis的Sandbox一探究竟。Cryengine的地形Lod时并没有Morph的过渡而是直接突变，这让我很惊呀，一般地，地形Lod时的突变会非常刺眼以至于让人难以接受，但是在Crysis中，我却完全无法意识到这一点，反复摆弄它的场景后发现，原来是超高密度的植被覆盖使得地形的跳动完全被植被所遮挡，植被同样也在不体地突变，所以一般只能感觉到植被Lod时的突变，而无法感觉到地形Lod时的突变。因为不需要Morph，Cryengine地形的灵活性就体现出来了，它可以切到最小只有2M*2M一个单元，但是越远，绘制的实际单元还是有所合并，具体LOD的细节仍然没有完全搞清楚，如果哪位大牛知道，希望能够不吝地告诉我，不胜感激啊。但是有一点是很清楚，它的LOD是有根据视觉复杂度和距离两个标准来决定网格精度的，我贴一张Wireframe先：
 
@@ -85,7 +85,7 @@ Crysis是用Cryengine2制作的，Cryengine3无幸窥见，在这里，先说说
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 
 "有一点想问下作者，你的DeferredShading为啥不支持HW的AA呢，而使用一个后处理来进行？DX10开始，MRT不是已经可以AA了吗？难道还有什么障碍？"
@@ -98,7 +98,7 @@ MRT支持AA不是问题，问题在于对AA Texture的读取，一直到DX10.1�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 很希望看到KlayGE的VirtualTexture和GI。目前我也正在整理一些解决方案，有这样的参考真的很不错哈。我可能考虑把LightMass和一种实时GI解决方案整合到无缝场景中。
 
@@ -122,13 +122,13 @@ Cryengine的阴影是我最喜欢的一个Cryengine的解决方案，它的科�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 在这儿有个问题，想问一下gongminmin老大，不知道DX11中HWShadowMap这个还有没有，我看到Cryengine中DX10的处理是不一样的，而且还利用了抗齿版的ShadowMap来做PCF。为啥Nvidia说DX10的特性能较好解决VSM的问题，你将来是否会在KlayGE中展示下你说的VSM的统一解决方案?
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 Cryengine中的AO是SSAO第一次被应用到游戏中，一才就炒热了实时间接光照。Cryengine的AO技术并不是目前效果最好的，但是它的Blur却是最快的，也就是因为超快的Blur，使得它可以应用FullAO，而不是HalfAO，因为FullAO的使用，叶子或者草之类的高频物体的AO变得比较好，所以总体来说，也算是个不错的AO解决方案。因为Cryengine的渲染体系是没有Normal可用的，所以仅Depth采样所得到的AO或多或少会有一些问题，所以只能说，这个是目前仅深度AO中，较好的效果，因为它的全局性非常强，这得益于算法中会根据距离来缩放射线长度，所以Cryengine的AO非常显眼，不像有些AO的效果离远了就容易被忽略。Cryengine的AO是全精度计算的，这可能会导致比较大的开销，所以Cryengine对采样进行了优化，主采样使用屏幕原大小的图，然后对周围采样时候则用了缩小后的Half图，这节省了一些采样时间，也引起了一个竖条状的失真，这个可以在Crysis中见到，雪天的门口比较明显。随机图方面，Cryengine用了一张4*4的图，一共16种，这使得它的杂点非常难看，但是却给BlurAO带来了便利，因为只需要四次采样，加上线性过滤，就能得到完全平滑的AO效果了，这比起Nvidia的HBAO要快得多。不过这样的AO仍然有比较多的缺点，比如角色的后面容易黑，低多边形镶嵌的痕迹明显，还有就是Blur后会造成象素的偏差，所以Crysis中也容易看到AO中有亮边，但这不影响这个AO全局性好的特点。不过具体如何，还是仁者见仁。我使用这个AO方案是因为草叶之类的高频物件表现相对好的原因。
 
@@ -146,19 +146,19 @@ KlayGE中的AO是不是和DX中的HDAO差不多啊？感觉那个AO可以钩出�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 最近我分别使用了下Cryengine和Unreal的编辑器，相比之下，Unreal的编辑器要更专业一些，虽然Cryengine很强大，但是并不一定就是最为成功的商业引擎。Unreal的材质连接器使得Unreal效果的扩展性要好很多，Cryengine相比之下也只是拥有更强大的内建渲染功能，作为一款引擎，与Unreal的积累上仍然存在一些差距。当然说到效果，比起Lightmass所展现出的静态GI，Cryengine也没有办法弄出相应的动态解决方案。目前还是会有很多人觉得虚幻的室内效果更为完美，即使那要以牺牲动态光影为代价。
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 DX11里HWShadowMap仍然存在阿，而且和DX10的一样。Nvidia说得可能是用Texture array来做sm
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 Texture array的好处应该是能一次渲染完四张，其实应该算是PSSM的福音，动态CubeMap和点光源的ShadowCubeMap都会挺Happy。我还以为会有两通道的深度缓冲呢
 
@@ -170,7 +170,7 @@ KlayGE的字体缩小并不清晰, 放大才清晰. 像8号字, 还是点阵更�
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 缩小是个问题。所以下一个版本我打算用点阵做缩小的部分。
 
@@ -200,13 +200,13 @@ Rendering with Conviction: The Graphics of Splinter Cell
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 我的GI方案会比较接近RSM的路子
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 15# hungy 
 
@@ -220,7 +220,7 @@ kuguoxin198
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 20# kuguoxin198 
 
@@ -238,7 +238,7 @@ DX9实现LPV会需要更多的额外的消耗。。。
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 25# liumingod 
 
@@ -252,7 +252,7 @@ qiaojie
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 27# qiaojie 
 
@@ -266,13 +266,13 @@ KlayGE结构还是很清晰的啊，唯一的问题的就是要理解这个引�
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 场景管理其实一直都有，这个版本只是略微加强了。地形等feature正在逐步往里加，谢谢关注
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 有Ogre使用经验的话，应该会比较容易看明白，不过我个人最喜欢KlayGE的多API支持，像OGL4.0这种，目前目前只有Klay一个有，所以参考价值比较大，像Ogre和Irrlicht就比较没意思，一切一切都是如此地古老。
 
@@ -284,7 +284,7 @@ KlayGE结构还是很清晰的啊，唯一的问题的就是要理解这个引�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 33# 32220937 
 
@@ -298,7 +298,7 @@ Cryengine对DXAPI的调用是最为简洁的 是不是和他采用super shader�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 37# wpp 
 
@@ -313,14 +313,14 @@ wpp
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 这个未能得知，我是无法知道C++部分处理的。
 
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 39# wpp 
 
@@ -328,7 +328,7 @@ wpp
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 我继续更新，为回应kuguoxin198 之前问的OC，我先在这里面简单说一下Cryengine中OC的理念，其实我也是这么想的，只不过GPU精粹上的说法和这个大相径庭，不过看到Cryengine的做法后，我像是有了靠山一般，很心安理得地也这么做了。当然，我说的OC是指Query的OC，其它使用CPU的OC方法不在这里面讨论。Query和回读差不多，都需要等待显卡指令执行完成，才能得到结果，如果在当帧疯狂查询，那OC会直接给予帧率毁灭性打击。GPU精粹上有一种优化OC的方案，但是这个方案只是减少了帧中查询的数目，并没有解决查询直接导致处理器空闲的问题，所以得到的性能增益非常有限，如果用这种方案来做一个游戏的话，场景规模会有相当大的限制。Cryengine的OC还是在我的意料之中，它在帧头，也就是Begin之后进行查询，这样的好处是，因为Begin已经等待显卡完成所有操作了，所以在Begin之后的查询就会相当迅速，不会因为同步白白浪费宝贵的CPU周期。得到结果后已经晚了一帧了，可以在渲染的时候直接应用，当然也可以等到下一帧场景管理器Cull的时候大幅度减轻CPU负载，不过那样的话，OC结果就需要延迟应用两帧，Cryengine可能是两种中的一种，我个人猜测应该是延两帧的，毕竟宝贵的CPU对Cryengine来说可是要计算几乎全部次世代物理的，在场景规模和视距都如此巨大的情况下，节省下这些资源是很有必要的。这时有人就会发现了，那不是会出现结果错误的情况，两帧的会比一帧的更严重。事实也确实如此，但这就是我之前提到过的瑕疵优化，有如此可观的性能提升，即使有瑕疵，仍然是合算的，因为毕竟OC的错误并不是无法接受的。原因有以下几点：
 
@@ -352,7 +352,7 @@ wpp
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 接下来说一下HDR，HDR可以说是Cryengine的一个强项，也可以说Cryengine把HDR的效果推到了前所未有的高度，总之Cryengine如此照片的渲染结果和它的HDR关系最为密切。
 
@@ -390,7 +390,7 @@ HDR的难点在于如何正确计算曝光量吧。我采用的方法是统计�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 47# qiaojie 
 
@@ -398,7 +398,7 @@ HDR的难点在于如何正确计算曝光量吧。我采用的方法是统计�
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 接下来说说ColorGrading，ColorGrading其实是一堆的滤镜效果的集合，里面用了许多相当实用的滤镜。在引擎渲染的最后使用一些滤镜可以很好地使画面适合实际需要，使得渲染结果更加容易控制。这样的理念非常值得推荐，所有所有都围绕着ArtistFriend进行。其中有一个效果值得一提，就是ColorSharping，计算方法竟然是把Scene - SceneBlur*d，d为一个很小的值。也不知道谁发明的这方法，减去模糊的部分，突出细节。
 
@@ -430,7 +430,7 @@ Scene - SceneBlur*d就是锐化模板
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 HDR解析的很好！
 
@@ -444,7 +444,7 @@ kuguoxin198
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 55# kuguoxin198 
 
@@ -452,7 +452,7 @@ kuguoxin198
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 54# gongminmin 
 
@@ -466,7 +466,7 @@ kuguoxin198
 
 ***
 
-![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
+![me][me]
 
 回复 58# kuguoxin198 
 
@@ -474,7 +474,7 @@ kuguoxin198
 
 ***
 
-![gonggod]({{ site.url }}/assets/cryengine-profile/gongminmin.png)
+![gonggod][gonggod]
 
 贴几张Pixar论文中的图，他们就用保边界的blur做细节加强。
 
@@ -509,4 +509,4 @@ kuguoxin198
 [rainyalley]:http://blog.rainyalley.com/
 
 [me]:  {{"/napoleon.png" | prepend: site.imgrepo/cryengine-profile }}
-[gonggod]:  {{"/cryengine-profile/gongminmin.png" | prepend: site.imgrepo }}
+[gonggod]:  {{"/gongminmin.png" | prepend: site.imgrepo/cryengine-profile }}
