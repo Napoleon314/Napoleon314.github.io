@@ -13,7 +13,7 @@ categories: Graphics
 
 ***
 
-![me][me]
+![me]({{ site.url }}/assets/cryengine-profile/napoleon.png)
 
 这个帖可能在这儿发比较奇怪，不过我是一个信仰黑客精神的程序员，也非常支持KlayGE的研发，希望发一些我的原创资料，和作者，以及KlayGE的作用者交流，甚至有一些麻烦的问题，也希望作者可以解答，如果KlayGE的研发能够涉及到这些东西，那就最好了。
 
@@ -507,6 +507,3 @@ kuguoxin198
 [venus3d]:https://github.com/Napoleon314/Venus3D
 [bossqian]:http://qiankanglai.me/
 [rainyalley]:http://blog.rainyalley.com/
-
-[me]:  {{"/cryengine-profile/napoleon.png" | prepend: site.imgrepo }}
-[gonggod]:  {{"/cryengine-profile/gongminmin.png" | prepend: site.imgrepo }}
