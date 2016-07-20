@@ -508,5 +508,5 @@ kuguoxin198
 [bossqian]:http://qiankanglai.me/
 [rainyalley]:http://blog.rainyalley.com/
 
-[me]:  {{"/napoleon.png" | prepend: site.imgrepo/cryengine-profile }}
+[me]:  {{"/cryengine-profile/napoleon.png" | prepend: site.imgrepo }}
 [gonggod]:  {{"/cryengine-profile/gongminmin.png" | prepend: site.imgrepo }}
