@@ -1,5 +1,5 @@
 ---
-title: Diary of Venus3D Development(0x00): Preface
+title: Diary of Venus3D Development(0): Preface
 tags: Development Mood Graphics
 categories: Diary
 ---
