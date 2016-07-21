@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Cryengine渲染剖析
 tags: Graphics 3D Cryengine
 categories: 远古回忆
