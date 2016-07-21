@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Preface of Venus3D Diary
+title: Diary of Venus3D&#58; Preface
 tags: Development Mood Graphics
 categories: Diary
 ---
